@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from 'react';
 
-const ElapsedTimeClock = () => {
-  const [elapsedTime, setElapsedTime] = useState({
+interface ElapsedTime {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+}
+
+const ElapsedTimeClock: React.FC = () => {
+  const [elapsedTime, setElapsedTime] = useState<ElapsedTime>({
     days: 0,
     hours: 0,
     minutes: 0,
@@ -9,14 +16,15 @@ const ElapsedTimeClock = () => {
   });
 
   useEffect(() => {
-    let startTime;
+    let startTime: Date;
 
     const fetchServerTime = async () => {
       try {
-        const response = await fetch('http://localhost:3000/time');
-        const data = await response.json();
+        const response = await fetch('https://danieldenni-how-many-da-99.deno.dev/time');
+        const data: { serverTime: string } = await response.json();
+        console.log(data);
         startTime = new Date(data.serverTime);
-        updateElapsedTime(); // Update immediately after fetching server time
+        updateElapsedTime();
       } catch (error) {
         console.error('Failed to fetch server time:', error);
       }
