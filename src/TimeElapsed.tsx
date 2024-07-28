@@ -15,44 +15,49 @@ const ElapsedTimeClock: React.FC = () => {
     seconds: 0,
   });
 
-  useEffect(() => {
-    let startTime: Date;
+  const [currentDay, setCurrentDay] = useState<string>('');
 
+  useEffect(() => {
     const fetchServerTime = async () => {
       try {
         const response = await fetch('https://danieldenni-how-many-da-99.deno.dev/time');
-        const data: { serverTime: string } = await response.json();
-        console.log(data);
-        startTime = new Date(data.serverTime);
+        const data: { difference: number } = await response.json();
+        
+        const startTime = new Date(Date.now() - data.difference);
+
+        const updateElapsedTime = () => {
+          const now = new Date();
+          const difference = now.getTime() - startTime.getTime();
+
+          const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
+          const minutes = Math.floor((difference / (1000 * 60)) % 60);
+          const seconds = Math.floor((difference / 1000) % 60);
+
+          setElapsedTime({ days, hours, minutes, seconds });
+        };
+
         updateElapsedTime();
+        const timer = setInterval(updateElapsedTime, 1000);
+
+        return () => clearInterval(timer);
       } catch (error) {
         console.error('Failed to fetch server time:', error);
       }
     };
 
-    const updateElapsedTime = () => {
-      const now = new Date();
-      const difference = now.getTime() - startTime.getTime();
-
-      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
-      const minutes = Math.floor((difference / (1000 * 60)) % 60);
-      const seconds = Math.floor((difference / 1000) % 60);
-
-      setElapsedTime({ days, hours, minutes, seconds });
-    };
-
     fetchServerTime();
 
-    // Update every second (1000 milliseconds)
-    const timer = setInterval(updateElapsedTime, 1000);
-
-    return () => clearInterval(timer);
+    const currentDate = new Date();
+    setCurrentDay(currentDate.toDateString());
   }, []);
 
   return (
     <div className="flex items-center justify-center h-screen bg-gray-900">
       <div className="bg-black rounded-3xl p-8 shadow-2xl border-4 border-red-600">
+        <div className="text-center mb-8 text-2xl text-white">
+          Current Day: {currentDay}
+        </div>
         <div className="grid grid-cols-4 gap-4 text-center">
           <div className="bg-red-600 rounded-xl p-4">
             <div className="text-6xl font-bold text-white">{elapsedTime.days.toString().padStart(2, '0')}</div>
