@@ -18,7 +18,6 @@ const ElapsedTimeClock: React.FC = () => {
   const [currentDay, setCurrentDay] = useState<string>('');
 
   useEffect(() => {
-    // Hardcoded start time: July 28, 2024, 16:00:00 (4 PM)
     const startTime = new Date('2024-07-28T16:00:00');
 
     const updateElapsedTime = () => {
@@ -42,28 +41,25 @@ const ElapsedTimeClock: React.FC = () => {
   }, []);
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-900">
-      <div className="bg-black rounded-3xl p-8 shadow-2xl border-4 border-red-600">
-        <div className="text-center mb-8 text-2xl text-white">
+    <div className="flex items-center justify-center min-h-screen bg-gray-900 p-4">
+      <div className="bg-black rounded-3xl p-4 sm:p-8 shadow-2xl border-4 border-red-600 w-full max-w-md">
+        <div className="text-center mb-4 sm:mb-8 text-xl sm:text-2xl text-white">
           Current Day: {currentDay}
         </div>
-        <div className="grid grid-cols-4 gap-4 text-center">
-          <div className="bg-red-600 rounded-xl p-4">
-            <div className="text-6xl font-bold text-white">{elapsedTime.days.toString().padStart(2, '0')}</div>
-            <div className="text-2xl text-white mt-2">Days</div>
-          </div>
-          <div className="bg-red-600 rounded-xl p-4">
-            <div className="text-6xl font-bold text-white">{elapsedTime.hours.toString().padStart(2, '0')}</div>
-            <div className="text-2xl text-white mt-2">Hours</div>
-          </div>
-          <div className="bg-red-600 rounded-xl p-4">
-            <div className="text-6xl font-bold text-white">{elapsedTime.minutes.toString().padStart(2, '0')}</div>
-            <div className="text-2xl text-white mt-2">Minutes</div>
-          </div>
-          <div className="bg-red-600 rounded-xl p-4">
-            <div className="text-6xl font-bold text-white">{elapsedTime.seconds.toString().padStart(2, '0')}</div>
-            <div className="text-2xl text-white mt-2">Seconds</div>
-          </div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 text-center">
+          {[
+            { label: 'Days', value: elapsedTime.days },
+            { label: 'Hours', value: elapsedTime.hours },
+            { label: 'Minutes', value: elapsedTime.minutes },
+            { label: 'Seconds', value: elapsedTime.seconds },
+          ].map((item) => (
+            <div key={item.label} className="bg-red-600 rounded-xl p-2 sm:p-4">
+              <div className="text-4xl sm:text-6xl font-bold text-white">
+                {item.value.toString().padStart(2, '0')}
+              </div>
+              <div className="text-lg sm:text-2xl text-white mt-1 sm:mt-2">{item.label}</div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
