@@ -18,38 +18,27 @@ const ElapsedTimeClock: React.FC = () => {
   const [currentDay, setCurrentDay] = useState<string>('');
 
   useEffect(() => {
-    const fetchServerTime = async () => {
-      try {
-        const response = await fetch('https://danieldenni-how-many-da-99.deno.dev/time');
-        const data: { difference: number } = await response.json();
-        
-        const startTime = new Date(Date.now() - data.difference);
+    // Hardcoded start time: July 28, 2024, 16:00:00 (4 PM)
+    const startTime = new Date('2024-07-28T16:00:00');
 
-        const updateElapsedTime = () => {
-          const now = new Date();
-          const difference = now.getTime() - startTime.getTime();
+    const updateElapsedTime = () => {
+      const now = new Date();
+      const difference = now.getTime() - startTime.getTime();
 
-          const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-          const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
-          const minutes = Math.floor((difference / (1000 * 60)) % 60);
-          const seconds = Math.floor((difference / 1000) % 60);
+      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((difference / (1000 * 60)) % 60);
+      const seconds = Math.floor((difference / 1000) % 60);
 
-          setElapsedTime({ days, hours, minutes, seconds });
-        };
-
-        updateElapsedTime();
-        const timer = setInterval(updateElapsedTime, 1000);
-
-        return () => clearInterval(timer);
-      } catch (error) {
-        console.error('Failed to fetch server time:', error);
-      }
+      setElapsedTime({ days, hours, minutes, seconds });
     };
 
-    fetchServerTime();
+    updateElapsedTime();
+    const timer = setInterval(updateElapsedTime, 1000);
 
-    const currentDate = new Date();
-    setCurrentDay(currentDate.toDateString());
+    setCurrentDay(new Date().toDateString());
+
+    return () => clearInterval(timer);
   }, []);
 
   return (
