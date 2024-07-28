@@ -4,7 +4,8 @@ const ElapsedTimeClock = () => {
   const [elapsedTime, setElapsedTime] = useState({
     days: 0,
     hours: 0,
-    minutes: 0
+    minutes: 0, 
+    seconds: 0,
   });
 
   useEffect(() => {
@@ -12,16 +13,18 @@ const ElapsedTimeClock = () => {
 
     const updateElapsedTime = () => {
       const now: Date = new Date();
-      const difference = now - startTime;
+      const difference = now.getTime() - startTime.getTime();
 
       const days = Math.floor(difference / (1000 * 60 * 60 * 24));
       const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
       const minutes = Math.floor((difference / (1000 * 60)) % 60);
+      const seconds = Math.floor((difference / 1000) % 60);
 
-      setElapsedTime({ days, hours, minutes });
+      setElapsedTime({ days, hours, minutes, seconds });
     };
 
-    const timer = setInterval(updateElapsedTime, 60000); // Update every minute
+    // Update every second (1000 milliseconds)
+    const timer = setInterval(updateElapsedTime, 1000);
 
     return () => clearInterval(timer);
   }, []);
@@ -29,7 +32,7 @@ const ElapsedTimeClock = () => {
   return (
     <div className="flex items-center justify-center h-screen bg-gray-900">
       <div className="bg-black rounded-3xl p-8 shadow-2xl border-4 border-red-600">
-        <div className="grid grid-cols-3 gap-4 text-center">
+        <div className="grid grid-cols-4 gap-4 text-center">
           <div className="bg-red-600 rounded-xl p-4">
             <div className="text-6xl font-bold text-white">{elapsedTime.days.toString().padStart(2, '0')}</div>
             <div className="text-2xl text-white mt-2">Days</div>
@@ -41,6 +44,10 @@ const ElapsedTimeClock = () => {
           <div className="bg-red-600 rounded-xl p-4">
             <div className="text-6xl font-bold text-white">{elapsedTime.minutes.toString().padStart(2, '0')}</div>
             <div className="text-2xl text-white mt-2">Minutes</div>
+          </div>
+          <div className="bg-red-600 rounded-xl p-4">
+            <div className="text-6xl font-bold text-white">{elapsedTime.seconds.toString().padStart(2, '0')}</div>
+            <div className="text-2xl text-white mt-2">Seconds</div>
           </div>
         </div>
       </div>
