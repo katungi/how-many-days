@@ -4,15 +4,26 @@ const ElapsedTimeClock = () => {
   const [elapsedTime, setElapsedTime] = useState({
     days: 0,
     hours: 0,
-    minutes: 0, 
+    minutes: 0,
     seconds: 0,
   });
 
   useEffect(() => {
-    const startTime: Date = new Date();
+    let startTime;
+
+    const fetchServerTime = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/time');
+        const data = await response.json();
+        startTime = new Date(data.serverTime);
+        updateElapsedTime(); // Update immediately after fetching server time
+      } catch (error) {
+        console.error('Failed to fetch server time:', error);
+      }
+    };
 
     const updateElapsedTime = () => {
-      const now: Date = new Date();
+      const now = new Date();
       const difference = now.getTime() - startTime.getTime();
 
       const days = Math.floor(difference / (1000 * 60 * 60 * 24));
@@ -22,6 +33,8 @@ const ElapsedTimeClock = () => {
 
       setElapsedTime({ days, hours, minutes, seconds });
     };
+
+    fetchServerTime();
 
     // Update every second (1000 milliseconds)
     const timer = setInterval(updateElapsedTime, 1000);
